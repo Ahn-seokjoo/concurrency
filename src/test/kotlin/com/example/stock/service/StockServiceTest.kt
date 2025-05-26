@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
 import kotlin.test.assertEquals
 
 @SpringBootTest
@@ -32,5 +34,27 @@ class StockServiceTest @Autowired constructor(
         val stock = stockRepository.findById(1L).orElseThrow()
 
         assertEquals(99, stock.quantity)
+    }
+
+    @Test
+    fun `동시에 100개 요청`() {
+        val threadCount = 100
+        val executor = Executors.newFixedThreadPool(32)
+        val latch = CountDownLatch(threadCount)
+
+        repeat(100) {
+            executor.submit {
+                try {
+                    stockService.decrease(1L, 1L)
+                } finally {
+                    latch.countDown()
+                }
+            }
+        }
+
+        latch.await()
+
+        val stock = stockRepository.findById(1L).orElseThrow()
+        assertEquals(0, stock.quantity)
     }
 }
