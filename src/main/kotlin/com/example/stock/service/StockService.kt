@@ -12,13 +12,10 @@ class StockService(
     @Transactional
     fun decrease(id: Long, quantity: Long) {
         // 조회
-
-        // 재고 감소
-
-        // 갱신된 값 저장
         val stock = repository.findById(id).orElseThrow()
+        // 재고 감소
         stock.decrease(quantity)
-
+        // 갱신된 값 저장
         repository.saveAndFlush(stock)
     }
 }
