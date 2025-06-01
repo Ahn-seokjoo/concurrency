@@ -14,6 +14,10 @@ interface StockRepository : JpaRepository<Stock, Long> {
     @Query("select s from Stock s where s.id = :id")
     fun findByIdWithPessimisticLock(id: Long): Stock
 
+    @Lock(LockModeType.OPTIMISTIC)
+    @Query("select s from Stock s where s.id = :id")
+    fun findByIdWithOptimisticLock(id: Long): Stock
+
     @Query("SELECT * FROM stock LIMIT 1", nativeQuery = true)
     fun findAnyOneStock(): Stock
 }
