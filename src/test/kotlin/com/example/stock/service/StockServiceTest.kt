@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 
 @SpringBootTest
 class StockServiceTest @Autowired constructor(
-    private val stockService: StockService,
+    private val stockService: PessimisticLockStockService,
     private val stockRepository: StockRepository,
 ) {
 
@@ -29,11 +29,12 @@ class StockServiceTest @Autowired constructor(
 
     @Test
     fun `재고 감소`() {
-        stockService.decrease(1L, 1L)
+        val stock = stockRepository.findAnyOneStock()
+        stockService.decrease(stock.id, 1L)
 
-        val stock = stockRepository.findById(1L).orElseThrow()
+        val result = stockRepository.findById(stock.id).orElseThrow()
 
-        assertEquals(99, stock.quantity)
+        assertEquals(99, result.quantity)
     }
 
     @Test

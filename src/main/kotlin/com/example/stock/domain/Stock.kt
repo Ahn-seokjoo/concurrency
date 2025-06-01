@@ -9,7 +9,7 @@ import jakarta.persistence.Id
 class Stock(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val id: Long = 0L,
+    val id: Long = 0L,
 
     private val productId: Long,
 
